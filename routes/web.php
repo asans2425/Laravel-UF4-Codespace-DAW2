@@ -1,27 +1,10 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return ['Laravel' => app()->version()];
 });
 
-Route::get('/hola', function () {
-    return view('hola');
-});
-Route::get('/inicio', function () {
-    return view('inicio');
-});
+require __DIR__.'/auth.php';
 
-
-Route::get('/suma', function () {
-    return view('suma');
-});
-
-Route::post('/suma', function (Request $request) {
-    $num1 = $request->input('num1');
-    $num2 = $request->input('num2');
-    $resultado = $num1 + $num2;
-    return view('suma', ['resultado' => $resultado]);
-});
