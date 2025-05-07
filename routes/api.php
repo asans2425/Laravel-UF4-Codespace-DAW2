@@ -75,8 +75,9 @@ Route::middleware([IsUserAuth::class])->group(function () {
     Route::post(('logout'), [AuthController::class, 'logout']);
     Route::get('me', [AuthController::class, 'getUser']);
     //personajes
-    Route::get('personajes', [PersonajesController::class, 'getPersonajes']);
-    Route::get('/personajes/{id}', [PersonajesController::class, 'getPersonaje']);
+    // Route::get('personajes', [PersonajesController::class, 'getPersonajes']);
+    // Route::get('/personajes/{id}', [PersonajesController::class, 'getPersonaje']);
+    Route::post('personajes', [PersonajesController::class, 'addPersonaje']);
 });
 
 //ADMIN ROUTES
