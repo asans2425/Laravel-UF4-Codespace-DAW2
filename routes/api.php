@@ -88,8 +88,8 @@ Route::middleware([IsAdmin::class])->group(function () {
     Route::delete('/users/{id}', [AuthController::class, 'deleteUser']);
     //personajes
     Route::post('personajes', [PersonajesController::class, 'addPersonaje']);
-    Route::get('personajes', [PersonajesController::class, 'getPersonajes']);
-    Route::get('/personajes/{id}', [PersonajesController::class, 'getPersonaje']);
+    // Route::get('personajes', [PersonajesController::class, 'getPersonajes']);
+    // Route::get('/personajes/{id}', [PersonajesController::class, 'getPersonaje']);
     Route::put('/personajes/{id}', [PersonajesController::class, 'updatePersonaje']);
     Route::delete('/personajes/{id}', [PersonajesController::class, 'deletePersonaje']);
 });
