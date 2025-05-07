@@ -67,6 +67,8 @@ Route::delete('/students/{id}', [StudentController::class, 'destroy']);
 //PUBLIC ROUTES
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::get('personajes', [PersonajesController::class, 'getPersonajes']);
+Route::get('/personajes/{id}', [PersonajesController::class, 'getPersonaje']);
 
 //PROTECTED ROUTES
 Route::middleware([IsUserAuth::class])->group(function () {
