@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use Tymon\JWTAuth\Facades\JWT;
 use Illuminate\Support\Facades\Auth;
 
 
@@ -19,9 +18,9 @@ class AuthController extends Controller
         // Validate the request with validator library
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:100',
-            'role' => 'required|string|max:100',
+            'role' => 'required|string|max:100|in:admin,user',
             'email' => 'required|string|email|max:100|unique:users',
-            'password' => 'required|string|min:10|confirmed',
+            'password' => 'required|string|min:5|confirmed',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -47,7 +46,7 @@ class AuthController extends Controller
         // Validate the request with validator library
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email|max:100',
-            'password' => 'required|string|min:10',
+            'password' => 'required|string|min:5',
         ]);
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
@@ -67,11 +66,12 @@ class AuthController extends Controller
             ], 200);
         } catch (JWTException $e) {
             return response()->json([
-                'message' => 'Could not create token',
+                'error'   => 'Could not create token',
+                'message' => $e->getMessage(),
             ], 500);
         }
-
     }
+
     //getuser
     public function getUser()
     {

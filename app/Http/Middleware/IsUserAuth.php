@@ -19,7 +19,7 @@ class IsUserAuth
             return $next($request);
         } else {
             return response()->json([
-                'message' => 'Unauthorized'
+                'message' => 'Unauthorized Invalid Token'
             ], 401);
         }
     }
