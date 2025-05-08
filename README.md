@@ -1,64 +1,221 @@
-Use the command: `php artisan serve` to run the application in the browser
+Aquí tienes la documentación de tu API basada en las rutas definidas en api.php. Esta documentación está diseñada para que un frontend externo pueda consumirla fácilmente.
 
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# Documentación de la API
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Esta API permite gestionar usuarios, personajes y partidas. Incluye autenticación mediante JWT y diferentes niveles de acceso (usuarios y administradores).
 
-## About Laravel
+## Base URL
+http://localhost/api
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## **Autenticación**
 
-## Learning Laravel
+### Registro de usuario
+**POST** `/register`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Body (JSON):**
+```json
+{
+    "name": "string",
+    "role": "admin | user",
+    "email": "string",
+    "password": "string",
+    "password_confirmation": "string"
+}
+Respuesta:
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+201 Created: Usuario registrado correctamente.
+422 Unprocessable Entity: Errores de validación.
+Inicio de sesión
+POST /login
 
-## Laravel Sponsors
+Body (JSON):
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+{
+    "email": "string",
+    "password": "string"
+}
+Respuesta:
 
-### Premium Partners
+200 OK: Devuelve el token JWT.
+401 Unauthorized: Credenciales inválidas.
+Cerrar sesión (requiere token)
+POST /logout
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
+Headers:
 
-## Contributing
+Authorization: Bearer {token}
+Respuesta:
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+200 OK: Sesión cerrada correctamente.
+Usuarios (Admin)
+Obtener todos los usuarios
+GET /users
 
-## Code of Conduct
+Headers:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Authorization: Bearer {token}
+Respuesta:
 
-## Security Vulnerabilities
+200 OK: Lista de usuarios.
+Obtener un usuario por ID
+GET /users/{id}
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Headers:
 
-## License
+Authorization: Bearer {token}
+Respuesta:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+200 OK: Detalles del usuario.
+404 Not Found: Usuario no encontrado.
+Actualizar un usuario
+PUT /users/{id}
+
+Headers:
+
+Authorization: Bearer {token}
+Body (JSON):
+
+{
+    "name": "string",
+    "email": "string",
+    "role": "admin | user",
+    "password": "string",
+    "password_confirmation": "string"
+}
+Respuesta:
+
+200 OK: Usuario actualizado.
+404 Not Found: Usuario no encontrado.
+Eliminar un usuario
+DELETE /users/{id}
+
+Headers:
+
+Authorization: Bearer {token}
+Respuesta:
+
+200 OK: Usuario eliminado.
+404 Not Found: Usuario no encontrado.
+Personajes
+Obtener todos los personajes
+GET /personajes
+
+Respuesta:
+
+200 OK: Lista de personajes.
+Obtener un personaje por ID
+GET /personajes/{id}
+
+Respuesta:
+
+200 OK: Detalles del personaje.
+404 Not Found: Personaje no encontrado.
+Crear un personaje (requiere token)
+POST /personajes
+
+Headers:
+
+Authorization: Bearer {token}
+Body (JSON):
+
+{
+    "nombre": "string",
+    "url_imagen": "string"
+}
+Respuesta:
+
+201 Created: Personaje creado.
+422 Unprocessable Entity: Errores de validación.
+Actualizar un personaje (Admin)
+PUT /personajes/{id}
+
+Headers:
+
+Authorization: Bearer {token}
+Body (JSON):
+
+{
+    "nombre": "string",
+    "url_imagen": "string"
+}
+Respuesta:
+
+200 OK: Personaje actualizado.
+404 Not Found: Personaje no encontrado.
+Eliminar un personaje (Admin)
+DELETE /personajes/{id}
+
+Headers:
+
+Authorization: Bearer {token}
+Respuesta:
+
+200 OK: Personaje eliminado.
+404 Not Found: Personaje no encontrado.
+Partidas
+Obtener todas las partidas del usuario (requiere token)
+GET /games
+
+Headers:
+
+Authorization: Bearer {token}
+Respuesta:
+
+200 OK: Lista de partidas.
+Crear una partida (requiere token)
+POST /games
+
+Headers:
+
+Authorization: Bearer {token}
+Respuesta:
+
+201 Created: Partida creada.
+Finalizar una partida (requiere token)
+PUT /games/{game}/finish
+
+Headers:
+
+Authorization: Bearer {token}
+Body (JSON):
+
+{
+    "clicks": "integer",
+    "points": "integer",
+    "duration": "integer"
+}
+Respuesta:
+
+200 OK: Partida actualizada.
+403 Forbidden: No tienes permiso para actualizar esta partida.
+Eliminar una partida (Admin o propietario)
+DELETE /games/{game}
+
+Headers:
+
+Authorization: Bearer {token}
+Respuesta:
+
+200 OK: Partida eliminada.
+403 Forbidden: No tienes permiso para eliminar esta partida.
+Obtener el ranking de los 5 mejores jugadores
+GET /ranking
+
+Respuesta:
+
+200 OK: Ranking de jugadores.
+Obtener todas las partidas de un usuario (Admin)
+GET /users/{id}/games
+
+Headers:
+
+Respuesta:
+
+200 OK: Lista de partidas del usuario.
+404 Not Found: Usuario no tiene partidas o no existe.
+Notas
+Todos los endpoints protegidos requieren un token JWT en el encabezado Authorization.
+Los administradores tienen acceso a rutas adicionales para gestionar usuarios y personajes.
