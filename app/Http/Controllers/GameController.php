@@ -102,6 +102,29 @@ class GameController extends Controller
 
         return response()->json($ranking);
     }
+
+    /**
+     * Mostrar totes les partides d’un usuari (només si ets admin)
+     */
+    public function getGamesByUserId($id)
+    {
+        // Si no ets admin, rebutja la petició
+        if (!Auth::user()->isAdmin) {
+            return response()->json(['error' => 'No tens permisos'], 403);
+        }
+
+        // Busquem les partides de l’usuari amb id concret
+        $games = Game::where('user_id', $id)->with('user')->get();
+
+        if ($games->isEmpty()) {
+            return response()->json(['message' => 'Aquest usuari no té cap partida o no existeix'], 404);
+        }
+
+        return response()->json([
+            'message' => 'Partides de l’usuari trobades correctament',
+            'data' => $games
+        ]);
+    }
 }
 //comenta en bloque
 

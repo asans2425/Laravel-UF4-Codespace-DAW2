@@ -102,4 +102,9 @@ Route::middleware([IsAdmin::class])->group(function () {
     Route::post('personajes', [PersonajesController::class, 'addPersonaje']);
     Route::put('/personajes/{id}', [PersonajesController::class, 'updatePersonaje']);
     Route::delete('/personajes/{id}', [PersonajesController::class, 'deletePersonaje']);
+
+    // 🧠 CRUD complet de partides
+    Route::get('/games', [GameController::class, 'index']);              // Veure totes les partides
+    Route::delete('/games/{game}', [GameController::class, 'destroy']);  // Eliminar partida
+    Route::get('/users/{id}/games', [GameController::class, 'getGamesByUserId']);
 });
