@@ -81,6 +81,20 @@ class AuthController extends Controller
         ], 200);
     }
 
+    //Route::get('me', [AuthController::class, 'getUser']);
+    // 👤 GET /api/me → veure l'usuari autenticat
+    public function getUser()
+    {
+        $user = Auth::user();
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+        return response()->json([
+            'message' => 'Hello you are this user! Authenticated user retrieved successfully',
+            'data' => $user
+        ], 200);
+    }
+
     // 👤 GET /api/users/{id} → veure un usuari concret
     public function getUserById($id)
     {
