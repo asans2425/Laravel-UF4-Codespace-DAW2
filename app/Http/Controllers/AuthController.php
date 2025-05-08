@@ -40,7 +40,7 @@ class AuthController extends Controller
     }
 
 
-    //funcion para login
+    //función para login
     public function login(Request $request)
     {
         // Validate the request with validator library
@@ -71,16 +71,81 @@ class AuthController extends Controller
             ], 500);
         }
     }
-
-    //getuser
-    public function getUser()
+    // 🔍 GET /api/users → veure tots els usuaris
+    public function getUsers()
     {
-        $user = Auth::user();
+        $users = User::all();
         return response()->json([
-            'message' => 'User retrieved successfully',
-            'data' => $user,
+            'message' => 'All users retrieved successfully',
+            'data' => $users
         ], 200);
     }
+
+    // 👤 GET /api/users/{id} → veure un usuari concret
+    public function getUserById($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        return response()->json([
+            'message' => 'User retrieved successfully',
+            'data' => $user
+        ], 200);
+    }
+
+    // ✏️ PUT /api/users/{id} → actualitzar un usuari
+    public function updateUser(Request $request, $id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'name' => 'string|max:100',
+            'email' => 'email|max:100|unique:users,email,' . $id,
+            'role' => 'in:admin,user',
+            'password' => 'nullable|string|min:5|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+
+        $user->name = $request->get('name', $user->name);
+        $user->email = $request->get('email', $user->email);
+        $user->role = $request->get('role', $user->role);
+
+        if ($request->filled('password')) {
+            $user->password = bcrypt($request->get('password'));
+        }
+
+        $user->save();
+
+        return response()->json([
+            'message' => 'User updated successfully',
+            'data' => $user
+        ], 200);
+    }
+
+    // ❌ DELETE /api/users/{id} → eliminar un usuari
+    public function deleteUser($id)
+    {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json(['message' => 'User not found'], 404);
+        }
+
+        $user->delete();
+
+        return response()->json(['message' => 'User deleted successfully'], 200);
+    }
+
 
     //logout
 

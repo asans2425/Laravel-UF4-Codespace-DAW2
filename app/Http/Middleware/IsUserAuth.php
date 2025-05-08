@@ -16,10 +16,10 @@ class IsUserAuth
     public function handle(Request $request, Closure $next): Response
     {
         if (auth('api')->user()) {
-            return $next($request);
+            return $next($request); //POTS PASSAR !!!! 😊
         } else {
             return response()->json([
-                'message' => 'Unauthorized Invalid Token'
+                'message' => 'Unauthorized Invalid Token' // No es pot passar 😒
             ], 401);
         }
     }

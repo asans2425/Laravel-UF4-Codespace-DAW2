@@ -13,15 +13,16 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PersonajesController;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsUserAuth;
+use App\Http\Controllers\GameController;
 
 // Rutas de autenticación
-Route::post('/register', [RegisteredUserController::class, 'store'])
-    ->middleware('guest')
-    ->name('register');
+// Route::post('/register', [RegisteredUserController::class, 'store'])
+//     ->middleware('guest')
+//     ->name('register');
 
-Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-    ->middleware('guest')
-    ->name('login');
+// Route::post('/login', [AuthenticatedSessionController::class, 'store'])
+//     ->middleware('guest')
+//     ->name('login');
 
 //crea una funcion vacia con un mensaje para comprobar la ruta de login
 // Route::post('/login', function () {
@@ -31,33 +32,33 @@ Route::post('/login', [AuthenticatedSessionController::class, 'store'])
 
 
 
-Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
-    ->middleware('guest')
-    ->name('password.email');
+// Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])
+//     ->middleware('guest')
+//     ->name('password.email');
 
-Route::post('/reset-password', [NewPasswordController::class, 'store'])
-    ->middleware('guest')
-    ->name('password.store');
+// Route::post('/reset-password', [NewPasswordController::class, 'store'])
+//     ->middleware('guest')
+//     ->name('password.store');
 
-Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
-    ->middleware(['auth', 'signed', 'throttle:6,1'])
-    ->name('verification.verify');
+// Route::get('/verify-email/{id}/{hash}', VerifyEmailController::class)
+//     ->middleware(['auth', 'signed', 'throttle:6,1'])
+//     ->name('verification.verify');
 
-Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
-    ->middleware(['auth', 'throttle:6,1'])
-    ->name('verification.send');
+// Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
+//     ->middleware(['auth', 'throttle:6,1'])
+//     ->name('verification.send');
 
-Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
-    ->middleware('auth')
-    ->name('logout');
+// Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])
+//     ->middleware('auth')
+//     ->name('logout');
 
-// Rutas del CRUD de estudiantes
-Route::get('/students', [StudentController::class, 'index']);
-Route::post('/students', [StudentController::class, 'store']);
-Route::get('/students/{id}', [StudentController::class, 'show']);
-Route::put('/students/{id}', [StudentController::class, 'update']);
-Route::patch('/students/{id}', [StudentController::class, 'updatePartial']);
-Route::delete('/students/{id}', [StudentController::class, 'destroy']);
+// // Rutas del CRUD de estudiantes
+// Route::get('/students', [StudentController::class, 'index']);
+// Route::post('/students', [StudentController::class, 'store']);
+// Route::get('/students/{id}', [StudentController::class, 'show']);
+// Route::put('/students/{id}', [StudentController::class, 'update']);
+// Route::patch('/students/{id}', [StudentController::class, 'updatePartial']);
+// Route::delete('/students/{id}', [StudentController::class, 'destroy']);
 
 // // Ruta protegida para obtener datos del usuario autenticado
 // Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
@@ -67,30 +68,38 @@ Route::delete('/students/{id}', [StudentController::class, 'destroy']);
 //PUBLIC ROUTES
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+
 Route::get('personajes', [PersonajesController::class, 'getPersonajes']);
 Route::get('/personajes/{id}', [PersonajesController::class, 'getPersonaje']);
 
-//PROTECTED ROUTES
+
+//PROTECTED ROUTES IS USER AUTH (LOGIN W TOKEN)
 Route::middleware([IsUserAuth::class])->group(function () {
-    Route::post(('logout'), [AuthController::class, 'logout']);
+    // 🔑 Autenticació
+    Route::post('logout', [AuthController::class, 'logout']);
     Route::get('me', [AuthController::class, 'getUser']);
-    //personajes
-    // Route::get('personajes', [PersonajesController::class, 'getPersonajes']);
-    // Route::get('/personajes/{id}', [PersonajesController::class, 'getPersonaje']);
+
+    // 🎭 Personatges (afegeix però no modifica ni elimina)
     Route::post('personajes', [PersonajesController::class, 'addPersonaje']);
+
+    // 🧠 Partides
+    Route::get('/games', [GameController::class, 'index']);              // Veure les meves partides
+    Route::post('/games', [GameController::class, 'store']);             // Crear partida
+    Route::put('/games/{game}/finish', [GameController::class, 'update']); // Finalitzar
+    Route::get('/ranking', [GameController::class, 'ranking']);          // TOP 5
 });
+
 
 //ADMIN ROUTES
 Route::middleware([IsAdmin::class])->group(function () {
-
+    // 👥 Gestió d'usuaris
     Route::get('users', [AuthController::class, 'getUsers']);
-    Route::get('/users/{id}', [AuthController::class, 'getUser']);
+    Route::get('/users/{id}', [AuthController::class, 'getUserById']);
     Route::put('/users/{id}', [AuthController::class, 'updateUser']);
     Route::delete('/users/{id}', [AuthController::class, 'deleteUser']);
-    //personajes
+
+    // 🎭 CRUD complet de personatges
     Route::post('personajes', [PersonajesController::class, 'addPersonaje']);
-    // Route::get('personajes', [PersonajesController::class, 'getPersonajes']);
-    // Route::get('/personajes/{id}', [PersonajesController::class, 'getPersonaje']);
     Route::put('/personajes/{id}', [PersonajesController::class, 'updatePersonaje']);
     Route::delete('/personajes/{id}', [PersonajesController::class, 'deletePersonaje']);
 });
