@@ -1,4 +1,3 @@
-
 # 🧠 API RESTful - Memory Game (Laravel 11 + JWT)
 
 ## 🎯 Objectiu del projecte
@@ -198,3 +197,34 @@ Tots els endpoints protegits requereixen token JWT:
 
 Header:
 Authorization: Bearer {token}
+
+### 🧙‍♂️ Gestió de personatges (`personajes`)
+
+**Model Personaje:**
+- `id`: integer
+- `nombre`: string
+- `url_imagen`: string
+
+**GET /api/personajes**  
+Llista tots els personatges disponibles. Accessible públicament (no cal token).
+
+**GET /api/personajes/{id}**  
+Mostra un personatge concret pel seu ID.
+
+**POST /api/personajes**  
+Crea un nou personatge. Accessible amb token (usuaris autenticats).  
+Body JSON:
+"nombre": "Mario",  
+"url_imagen": "https://exemple.com/mario.png"
+
+**PUT /api/personajes/{id}**  
+Actualitza un personatge existent. Accessible només per administradors.  
+Body JSON:
+"nombre": "Mario Actualitzat",  
+"url_imagen": "https://exemple.com/mario_new.png"
+
+**DELETE /api/personajes/{id}**  
+Elimina un personatge per ID. Només per admins.
+
+---
+
