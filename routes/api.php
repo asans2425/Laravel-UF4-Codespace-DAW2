@@ -108,3 +108,4 @@ Route::middleware([IsAdmin::class])->group(function () {
     Route::delete('/games/{game}', [GameController::class, 'destroy']);  // Eliminar partida
     Route::get('/users/{id}/games', [GameController::class, 'getGamesByUserId']);
 });
+
