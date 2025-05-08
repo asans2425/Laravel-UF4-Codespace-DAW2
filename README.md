@@ -1,221 +1,287 @@
-Aquí tienes la documentación de tu API basada en las rutas definidas en api.php. Esta documentación está diseñada para que un frontend externo pueda consumirla fácilmente.
+Paste your rich text content here
 
-# Documentación de la API
+# 🧠 API RESTful - Memory Game (Laravel 11 + JWT)
 
-Esta API permite gestionar usuarios, personajes y partidas. Incluye autenticación mediante JWT y diferentes niveles de acceso (usuarios y administradores).
+## 🎯 Objectiu del projecte
 
-## Base URL
-http://localhost/api
+Aquesta API RESTful s’ha desenvolupat amb Laravel 11 per gestionar un **joc de Memory** en què els usuaris poden registrar-se, iniciar sessió, jugar partides i competir per puntuacions en un rànquing. L'API està pensada per ser consumida per un frontend fet amb JavaScript i `fetch()`.
 
+* * *
 
----
+## 🔐 Autenticació amb JWT
 
-## **Autenticación**
+* *   Registre (`POST /api/register`) amb validació i rol (`admin` o `user`)
+*     
+* *   Login (`POST /api/login`) retorna token JWT
+*     
+* *   Logout (`POST /api/logout`) invalida el token
+*     
+* *   Obtenir perfil (`GET /api/me`) retorna dades de l’usuari autenticat
+*     
 
-### Registro de usuario
-**POST** `/register`
+* * *
 
-**Body (JSON):**
-```json
-{
-    "name": "string",
-    "role": "admin | user",
-    "email": "string",
-    "password": "string",
-    "password_confirmation": "string"
-}
-Respuesta:
+## 🔧 Protecció de rutes
 
-201 Created: Usuario registrado correctamente.
-422 Unprocessable Entity: Errores de validación.
-Inicio de sesión
-POST /login
+* *   `IsUserAuth`: middleware que permet accés només si l'usuari està autenticat
+*     
+* *   `IsAdmin`: només accessible si el `role` de l’usuari és `admin`
+*     
 
-Body (JSON):
+* * *
 
-{
-    "email": "string",
-    "password": "string"
-}
-Respuesta:
+## 🎮 Gestió de partides
 
-200 OK: Devuelve el token JWT.
-401 Unauthorized: Credenciales inválidas.
-Cerrar sesión (requiere token)
-POST /logout
+**Models i taules relacionades:**
 
-Headers:
+1. 1.  Taula `games`:
+1.     
+1.     * *   user\_id (clau forana)
+1.     *     
+1.     * *   clicks (int)
+1.     *     
+1.     * *   points (int)
+1.     *     
+1.     * *   duration (int, segons)
+1.     *     
+1.     * *   timestamps
+1.     *     
+1. 2.  Model `Game.php` amb relació belongsTo cap a `User.php`
+1.     
 
-Authorization: Bearer {token}
-Respuesta:
+**Controlador `GameController`:**
 
-200 OK: Sesión cerrada correctamente.
-Usuarios (Admin)
-Obtener todos los usuarios
-GET /users
+1. 1.  `index()` → retorna les partides de l’usuari loguejat
+1.     
+1. 2.  `store()` → crea una nova partida buida
+1.     
+1. 3.  `update()` → finalitza una partida (clicks, points, duration)
+1.     
+1. 4.  `destroy()` → elimina una partida si ets propietari o admin
+1.     
+1. 5.  `ranking()` → consulta amb `groupBy`, `MIN`, `MAX` i `with('user')` per mostrar TOP 5 jugadors
+1.     
+1. 6.  `getGamesByUserId($id)` → mostra totes les partides d’un usuari concret (només per admins)
+1.     
 
-Headers:
+* * *
 
-Authorization: Bearer {token}
-Respuesta:
+## 🔁 Rutes protegides
 
-200 OK: Lista de usuarios.
-Obtener un usuario por ID
-GET /users/{id}
+**Usuari autenticat (token JWT):**
 
-Headers:
+* *   GET `/games`
+*     
+* *   POST `/games`
+*     
+* *   PUT `/games/{id}/finish`
+*     
+* *   GET `/ranking`
+*     
+* *   POST `/logout`
+*     
+* *   GET `/me`
+*     
 
-Authorization: Bearer {token}
-Respuesta:
+**Admin:**
 
-200 OK: Detalles del usuario.
-404 Not Found: Usuario no encontrado.
-Actualizar un usuario
-PUT /users/{id}
+* *   GET `/users`
+*     
+* *   GET `/users/{id}`
+*     
+* *   PUT `/users/{id}`
+*     
+* *   DELETE `/users/{id}`
+*     
+* *   GET `/users/{id}/games`
+*     
 
-Headers:
+* * *
 
-Authorization: Bearer {token}
-Body (JSON):
+## 🧪 Seeders i proves
 
-{
-    "name": "string",
-    "email": "string",
-    "role": "admin | user",
-    "password": "string",
-    "password_confirmation": "string"
-}
-Respuesta:
+Inclou seeders per a:
 
-200 OK: Usuario actualizado.
-404 Not Found: Usuario no encontrado.
-Eliminar un usuario
-DELETE /users/{id}
+* *   Usuaris (`UserSeeder`) amb 1 admin i 3 usuaris normals
+*     
+* *   Partides (`GameSeeder`) amb exemples per provar el rànquing
+*     
+* *   Personatges (`PersonajeSeeder`) amb URL d’imatges i timestamps
+*     
 
-Headers:
+Es pot executar amb:
 
-Authorization: Bearer {token}
-Respuesta:
+1. 1.  `php artisan migrate:fresh --seed`
+1.     
 
-200 OK: Usuario eliminado.
-404 Not Found: Usuario no encontrado.
-Personajes
-Obtener todos los personajes
-GET /personajes
+* * *
 
-Respuesta:
+## 🧪 Proves amb Postman
 
-200 OK: Lista de personajes.
-Obtener un personaje por ID
-GET /personajes/{id}
+Inclosa una col·lecció `.json` amb:
 
-Respuesta:
+* *   Registre i login
+*     
+* *   Crear i finalitzar partida
+*     
+* *   Consultar rànquing
+*     
+* *   Operacions d’administrador
+*     
 
-200 OK: Detalles del personaje.
-404 Not Found: Personaje no encontrado.
-Crear un personaje (requiere token)
-POST /personajes
+* * *
 
-Headers:
+## 📌 Notes finals
 
-Authorization: Bearer {token}
-Body (JSON):
+* *   Es recomana usar `Hash::make()` per generar contrasenyes
+*     
+* *   La durada de partida s’envia des del frontend com `duration` (segons)
+*     
+* *   La validació `email` a `updateUser` fa servir `sometimes` i controla duplicats amb `unique:users,email,{id}`
+*     . You can paste directly from Word or other rich text sources.
 
-{
-    "nombre": "string",
-    "url_imagen": "string"
-}
-Respuesta:
+  
 
-201 Created: Personaje creado.
-422 Unprocessable Entity: Errores de validación.
-Actualizar un personaje (Admin)
-PUT /personajes/{id}
+  
 
-Headers:
+* * *
 
-Authorization: Bearer {token}
-Body (JSON):
+## 🌐 Documentació d'Endpoints per a Frontend
 
-{
-    "nombre": "string",
-    "url_imagen": "string"
-}
-Respuesta:
+Aquesta secció està pensada per a **desenvolupadors frontend** que necessitin comunicar-se amb l'API. S'especifiquen tots els endpoints disponibles, els models i exemples de cos (body) que cal enviar.
 
-200 OK: Personaje actualizado.
-404 Not Found: Personaje no encontrado.
-Eliminar un personaje (Admin)
-DELETE /personajes/{id}
+### 🔐 Autenticació
 
-Headers:
+**POST /api/register**
 
-Authorization: Bearer {token}
-Respuesta:
+* *   Crea un nou usuari.
+*     
+* *   Body JSON:  
+*     "name": "Anna",  
+*     "email": "[anna@example.com](mailto:anna@example.com)",  
+*     "password": "12345678",  
+*     "password\_confirmation": "12345678",  
+*     "role": "user"
+*     
 
-200 OK: Personaje eliminado.
-404 Not Found: Personaje no encontrado.
-Partidas
-Obtener todas las partidas del usuario (requiere token)
-GET /games
+**POST /api/login**
 
-Headers:
+* *   Inicia sessió i retorna un `token`.
+*     
+* *   Body JSON:  
+*     "email": "[anna@example.com](mailto:anna@example.com)",  
+*     "password": "12345678"
+*     
 
-Authorization: Bearer {token}
-Respuesta:
+**GET /api/me**
 
-200 OK: Lista de partidas.
-Crear una partida (requiere token)
-POST /games
+* *   Retorna l'usuari autenticat (Bearer Token requerit).
+*     
 
-Headers:
+**POST /api/logout**
 
-Authorization: Bearer {token}
-Respuesta:
+* *   Invalida el token actual.
+*     
 
-201 Created: Partida creada.
-Finalizar una partida (requiere token)
-PUT /games/{game}/finish
+* * *
 
-Headers:
+### 🎮 Partides (`games`)
 
-Authorization: Bearer {token}
-Body (JSON):
+**Model Game:**
 
-{
-    "clicks": "integer",
-    "points": "integer",
-    "duration": "integer"
-}
-Respuesta:
+* *   `id`: integer
+*     
+* *   `user_id`: integer
+*     
+* *   `clicks`: integer
+*     
+* *   `points`: integer
+*     
+* *   `duration`: integer (en segons)
+*     
 
-200 OK: Partida actualizada.
-403 Forbidden: No tienes permiso para actualizar esta partida.
-Eliminar una partida (Admin o propietario)
-DELETE /games/{game}
+**GET /api/games**
 
-Headers:
+* *   Llista les partides de l’usuari actual.
+*     
 
-Authorization: Bearer {token}
-Respuesta:
+**POST /api/games**
 
-200 OK: Partida eliminada.
-403 Forbidden: No tienes permiso para eliminar esta partida.
-Obtener el ranking de los 5 mejores jugadores
-GET /ranking
+* *   Crea una partida buida.
+*     
+* *   No cal body (l'usuari actual es vincula automàticament).
+*     
 
-Respuesta:
+**PUT /api/games/{id}/finish**
 
-200 OK: Ranking de jugadores.
-Obtener todas las partidas de un usuario (Admin)
-GET /users/{id}/games
+* *   Finalitza una partida i registra els resultats.
+*     
+* *   Body JSON:  
+*     "clicks": 24,  
+*     "points": 10,  
+*     "duration": 52
+*     
 
-Headers:
+**GET /api/ranking**
 
-Respuesta:
+* *   Retorna el rànquing dels millors 5 jugadors segons durada i clics.
+*     
 
-200 OK: Lista de partidas del usuario.
-404 Not Found: Usuario no tiene partidas o no existe.
-Notas
-Todos los endpoints protegidos requieren un token JWT en el encabezado Authorization.
-Los administradores tienen acceso a rutas adicionales para gestionar usuarios y personajes.
+* * *
+
+### 👤 Gestió d’usuaris (Admin)
+
+**Model User:**
+
+* *   `id`: integer
+*     
+* *   `name`: string
+*     
+* *   `email`: string
+*     
+* *   `password`: string (enviat només en crear o actualitzar)
+*     
+* *   `role`: string ('admin' o 'user')
+*     
+
+**GET /api/users**
+
+* *   Llista tots els usuaris (admin).
+*     
+
+**GET /api/users/{id}**
+
+* *   Retorna un usuari concret (admin).
+*     
+
+**PUT /api/users/{id}**
+
+* *   Actualitza les dades d’un usuari (admin).
+*     
+* *   Body JSON opcional (només enviar el que vulguis canviar):  
+*     "name": "Anna Nova",  
+*     "email": "[anna.nova@example.com](mailto:anna.nova@example.com)",  
+*     "role": "admin",  
+*     "password": "nova12345",  
+*     "password\_confirmation": "nova12345"
+*     
+
+**DELETE /api/users/{id}**
+
+* *   Elimina un usuari per ID (admin).
+*     
+
+**GET /api/users/{id}/games**
+
+* *   Retorna totes les partides d’un usuari concret (admin).
+*     
+
+* * *
+
+**🛡️ Autenticació**: Tots els endpoints protegits requereixen token JWT enviat a l'encapçalament:
+
+* *   Header: `Authorization: Bearer {token}`
+*     
+
+Aquestes especificacions són imprescindibles perquè el frontend pugui fer `fetch()` amb efectivitat
+Lets' go!!! 👍
