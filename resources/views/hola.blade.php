@@ -7,6 +7,6 @@
     <title>hola</title>
 </head>
 <body>
-<h1>hola</h1>
+<h1>hola pagina inicio</h1>
 </body>
 </html>

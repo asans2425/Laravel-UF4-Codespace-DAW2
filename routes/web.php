@@ -1,10 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\TeamController;
 
 Route::get('/', function () {
-    return ['Laravel' => app()->version()];
+    return view('hola');
 });
 
-require __DIR__.'/auth.php';
-
+Route::resource('teams', TeamController::class);
