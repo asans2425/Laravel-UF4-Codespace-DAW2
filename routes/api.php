@@ -7,11 +7,14 @@ use App\Http\Controllers\PersonajesController;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsUserAuth;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\Api\StudentController;
 
 
 //PUBLIC ROUTES
 Route::post('register', [AuthController::class, 'register']);
 Route::post('login', [AuthController::class, 'login']);
+Route::get('students', [StudentController::class, 'index']);
+
 
 
 // Route::get('personajes', [PersonajesController::class, 'getPersonajes']);
