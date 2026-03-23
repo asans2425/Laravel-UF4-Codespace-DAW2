@@ -18,4 +18,8 @@ class Student extends Model
         'phone',
         'address'
     ];
+
+    public function notes(){
+        return $this->hasMany(Note::class);
+    }
 }
