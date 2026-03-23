@@ -38,21 +38,21 @@ class NoteController extends Controller
        ], 201);
    }
 
-   public function show(string $id)
-   {
-       $note = Note::find($id);
+//    public function show(string $id)
+//    {
+//        $note = Note::find($id);
 
-       if (!$note) {
-           return response()->json([
-               'message' => 'Nota no trobada'
-           ], 404);
-       }
+//        if (!$note) {
+//            return response()->json([
+//                'message' => 'Nota no trobada'
+//            ], 404);
+//        }
 
-       return response()->json([
-           'message' => 'Detall de la nota',
-           'data' => $note
-       ], 200);
-   }
+//        return response()->json([
+//            'message' => 'Detall de la nota',
+//            'data' => $note
+//        ], 200);
+//    }
 
    public function update(Request $request, string $id)
    {
